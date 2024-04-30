@@ -4,7 +4,7 @@ data "template_file" "user_data" {
   vars = {
     userdata_script     = var.user_data
     hostname            = var.hostname
-    hostname_fqdn       = local.effective_fqdn
+    hostname_fqdn       = local.requested_fqdn
   }
 }
 
