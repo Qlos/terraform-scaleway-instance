@@ -1,8 +1,18 @@
+data "template_file" "user_data" {
+  template = file("${path.module}/templates/user_data.tmpl")
+
+  vars = {
+    userdata_script     = var.user_data
+    hostname            = var.hostname
+    hostname_fqdn       = local.effective_fqdn
+  }
+}
+
 resource "scaleway_instance_server" "this" {
   image = var.image
   type  = var.instance_type
 
-  name               = local.requested_fqdn
+  name               = local.server_name
   placement_group_id = var.placement_group_id
   security_group_id  = var.security_group_id
   tags               = var.tags
@@ -38,7 +48,10 @@ resource "scaleway_instance_server" "this" {
   boot_type     = var.boot_type
   bootscript_id = var.bootscript_id
   state         = var.state
-  #  user_data     = var.user_data
+
+  user_data = {
+    cloud-init = data.template_file.user_data.rendered
+  }
 
   project_id = var.project_id
   zone       = var.zone
